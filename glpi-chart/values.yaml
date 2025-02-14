@@ -104,11 +104,10 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
+volumes: 
+  - name: extra-storage
+    persistentVolumeClaim:
+      claimName: extra-pvc
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
@@ -121,3 +120,13 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+mariadb:
+  enabled: true
+  storageSize: 10Gi
+  cpu: "500m"
+  memory: "512Mi"
+  rootPassword: "rootpass"
+  user: "glpi"
+  password: "glpipass"
+  database: "glpi"

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mariadb
+  labels:
+    app: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: "mariadb:latest"
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: glpi-secret
+                  key: db_root_password
+            - name: MYSQL_DATABASE
+              value: "glpi"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: glpi-secret
+                  key: db_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: glpi-secret
+                  key: db_password
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb-storage
+      volumes:
+        - name: mariadb-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-mariadb-pvc
